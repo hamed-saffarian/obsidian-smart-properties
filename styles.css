@@ -1,0 +1,23 @@
+.smart-properties-hidden {
+  display: none !important;
+}
+
+.smart-properties-select {
+  width: 100%;
+}
+
+.smart-properties-prompt {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 12em;
+  overflow: auto;
+  padding: 0.5em;
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+}
+
+.smart-properties-triggers {
+  width: 100%;
+  min-width: 20em;
+  font-family: var(--font-monospace);
+}

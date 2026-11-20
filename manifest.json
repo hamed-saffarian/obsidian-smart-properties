@@ -1,0 +1,9 @@
+{
+  "id": "smart-properties",
+  "name": "Smart Properties",
+  "version": "1.0.0",
+  "minAppVersion": "1.5.0",
+  "description": "Dropdown properties whose values can trigger agent prompts: selecting a value opens an Obsidian Copilot agent chat with a prepared prompt or skill call.",
+  "author": "Hamed Saffarian",
+  "isDesktopOnly": false
+}

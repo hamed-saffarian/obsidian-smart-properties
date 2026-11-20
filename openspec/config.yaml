@@ -1,0 +1,57 @@
+schema: spec-driven
+githubCopilot:
+  cloudAgent: true
+
+context: |
+  Smart Properties is an Obsidian community plugin (id: smart-properties, MIT, public on GitHub).
+  Purpose: dropdown properties whose values can trigger agentic prompts in the Obsidian Copilot plugin.
+  Tech: plain CommonJS JavaScript in main.js plus styles.css; no build step, no npm dependencies; Obsidian API only (minAppVersion 1.5.0).
+  Integrations: Copilot's internal newAgentChatWithDraft() (not a public API) with clipboard fallback;
+  the dropdown is injected into Obsidian's Properties view via DOM classes (.metadata-property*), which are not a public API.
+  Settings are stored by Obsidian in data.json (never committed).
+  Release files: main.js, manifest.json, styles.css; versions.json maps plugin version to minAppVersion.
+  Docs and code are in English.
+
+rules:
+  proposal:
+    - State the effect on the safety invariants (no auto-send, confirmation before chat, no network, prompt sanitizing); say "none" if unaffected.
+  specs:
+    - Keep these invariants unless a change explicitly replaces them; prompts are never sent to the agent automatically, a confirmation shows the full prompt before a chat opens, the plugin makes no network requests, and note names, paths and values are sanitized before insertion into prompts.
+    - Specify behavior for Obsidian or Copilot internals being unavailable.
+  design:
+    - Name every non-public Obsidian or Copilot API used and its fallback.
+    - Do not copy code from third-party plugins without a compatible license.
+  tasks:
+    - Include a manual test in Obsidian for each user-visible behavior; there is no automated test suite yet.
+    - Include README and versions.json/manifest.json updates when behavior or version changes.
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
