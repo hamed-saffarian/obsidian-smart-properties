@@ -9,10 +9,13 @@ The plugin itself only writes the selected property value. **The prompt is never
 
 ## Example
 
-A task property `status` with options `open, in_progress, done` and this trigger:
+A task property `status` with options `open`, `in_progress`, `done` and this trigger entry in its YAML configuration:
 
 ```
-done => Apply the skill `.agents/skills/task-complete/SKILL.md` to the task {{link}}: mark it as done and add the done line under the related item in its source notes.
+triggers:
+  - value: done
+    prompt: |-
+      Apply the skill `.agents/skills/task-complete/SKILL.md` to the task {{link}}: mark it as done and add the done line under the related item in its source notes.
 ```
 
 Selecting `done` in a task note opens a Copilot chat with that prompt. The example skill is in [`examples/skills/task-complete/`](examples/skills/task-complete/SKILL.md).
@@ -33,17 +36,54 @@ Selecting `done` in a task note opens a Copilot chat with that prompt. The examp
 
 ## Settings
 
-For each property:
+Version 2 uses **file-only configuration**. Create a Markdown note with your normal vault template, put exactly one fenced `yaml` or `yml` block in its body, then enter its vault-relative path in Smart Properties settings and click **Use path**. Code fences start at column zero, outside lists/quotes. The note's frontmatter is not configuration. See the [complete sample](examples/configuration.md).
 
-| Field | Meaning |
-|---|---|
-| Property key | Exact frontmatter key, e.g. `status` or `selector.task_status` |
-| Options | Comma-separated dropdown values |
-| Triggers | One per line: `value => prompt` |
+```yaml
+schema_version: 1
+properties:
+  - key: status
+    display_name: Task status
+    options: [open, in_progress, "review, legal", done]
+    triggers:
+      - value: done
+        prompt: |-
+          Review {{link}} and suggest the next action.
+```
 
-Prompt placeholders:
+Keys/options/trigger values must be strings; quote numeric/boolean values intended as text. Unknown fields, duplicate property keys, unsupported schema versions, invalid types, invalid YAML or multiple YAML blocks reject the entire incoming configuration. Empty option strings are dropped. Duplicate options keep their order; the first matching trigger wins. An explicit `properties: []` removes all dropdowns.
 
-Option changes update open Properties dropdowns without reopening the note or changing its stored value. A focused dropdown refreshes after you leave it. Removing the selected option keeps the note's existing value visible as an extra entry. Refreshing the display never runs a trigger.
+Saving/syncing a valid note updates open Properties and Bases dropdowns without changing their stored values or running triggers. A focused dropdown reconciles after blur. Removing a selected option retains the note's value as an unknown entry. File/folder renames are followed. **Reload** retries the source and **Open note** opens it for editing.
+
+If the selected file is missing or invalid, settings report whether a validated last-good snapshot for that same path is being used. This recovery cache survives restart in plugin storage; it is not an editable local source. With no usable same-path cache, native editing remains available. Switching paths never uses the previous path's cache. Configuration changes cannot send a prompt or silently replace the prompt already displayed in an open confirmation.
+
+### Visual identity and readable names (2.1+)
+
+In supported Bases tables, a column with at least one prompt-bearing option also tints its existing native header icon with the theme accent color. The icon shape, sorting/menu behavior and explicit Base label are preserved. Columns without prompts retain the native icon color; no header or cell dot is added.
+
+Smart Properties dropdowns have a subtle themed border/background, a dropdown arrow and a visible keyboard focus outline. In Properties, the existing property-type icon uses the theme accent color when some options have prompts; its shape and native type-picker behavior are preserved. There is no property-level dot beside the name. Prompt-bearing options show a `•` suffix in the native list. Properties also shows a separate 5px accent-colored dot beside a trigger-bearing selected value. Bases has no additional header or cell dots: the textual option suffix and accessible descriptions convey the association without crowding adjacent columns. This release adds no visual hover/focus explanation; assistive technology can read the prompt guidance through the control's accessible description. These indicators describe connected prompts, not whether a workflow has run.
+
+Set optional `display_name` to a nonempty string for a readable label. Without it, the exact property key is shown. In Properties, readable names use the same font family, size, weight and color as ordinary native property labels, without extra emphasis. Hovering the name does not repeat the display name or technical key in a tooltip. Editing the name uses the original native key input and reveals the actual key; accessible control names retain the exact identity. Prompt-bearing controls retain an accessible prompt and confirmation description without a visual tooltip or repeated property identity. Ordinary controls add no explanatory description. In Bases, an explicit column display name takes precedence over the plugin label. Stored YAML keys, prompt placeholders, option values and Base files are unchanged; no automatic `s.*` alias is generated. If a header structure or another plugin's name overlay cannot be handled safely, the native label remains and the dropdown retains its accessible identity.
+
+Readable name overlays are vertically centered within the native property-key field so their text aligns with ordinary property names and type icons, independently of row height.
+
+Display names survive reload, recovery cache and export. Configuration schema version remains 1, but older plugin releases reject `display_name` as an unknown field: remove the field before downgrading. Light/dark themes and RTL use native theme variables and logical spacing.
+
+### Upgrade from 1.x
+
+Back up your plugin release files and `data.json` before upgrading. Version 2 removes the local property/options/trigger editors; old definitions are retained only as inactive migration data. Until setup/migration, native editors are shown.
+
+1. Create your destination note using the normal template, with no YAML code block in its body (ordinary frontmatter is fine).
+2. Enter its path, click **Use path**, then **Export legacy settings**.
+3. Export appends one versioned configuration block, preserving existing frontmatter/prose. It refuses an existing YAML block or changed target and never creates/overwrites a note automatically.
+4. Definitions are re-read and validated before legacy storage is retired. If export/verification fails, keep the pre-upgrade backup and review the status; a successfully appended note is not destructively rolled back.
+
+Downgrading 1.x does not read version 2 storage automatically; restore the pre-upgrade backup or recover definitions from the exported note.
+
+### Sharing with coworkers
+
+For a shared vault, distribute/sync the configuration note and have each installation choose its corresponding path. For separate vaults, copy/version the note through your team's chosen process; this plugin does not synchronize vaults or install itself. The same note provides the same definitions, while each final prompt still requires confirmation and stays unsent in Copilot. Do not store credentials in the note. Backups, recovery cache and unmigrated legacy data remain in plugin storage and follow whatever sync rules your vault uses.
+
+### Prompt placeholders
 
 | Placeholder | Replaced with |
 |---|---|
