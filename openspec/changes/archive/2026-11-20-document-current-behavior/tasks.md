@@ -8,8 +8,8 @@ Test run 2026-11-20 in the maintainer's vault, automated through the Obsidian CL
 
 - [x] 1.1 Install main.js, manifest.json and styles.css into `.obsidian/plugins/smart-properties/` of a test vault with Obsidian Copilot enabled, enable Smart Properties, and verify it loads without console errors
   - Passed. No new console errors.
-- [ ] 1.2 Configure property `sp_test` with options `open, in_progress , done,` and trigger `done => Complete {{link}} ({{path}}, {{title}}, {{property}}={{value}}) {{unknown}}`; verify settings show the options `open, in_progress, done`
-  - Partly done: the property was written directly to data.json, so the comma/space/empty-option parsing of the Options field is not yet verified in the settings UI.
+- [x] 1.2 Configure property `sp_test` with options `open, in_progress , done,` and trigger `done => Complete {{link}} ({{path}}, {{title}}, {{property}}={{value}}) {{unknown}}`; verify settings show the options `open, in_progress, done`
+  - Passed: property first written to data.json; on 2026-11-20 the Options field in the settings UI was set to `open, in_progress , done,` and stored as open, in_progress, done (also after reopening settings).
 
 ## 2. selector-properties
 
@@ -49,12 +49,13 @@ Test run 2026-11-20 in the maintainer's vault, automated through the Obsidian CL
 - [x] 3.7 Disable Copilot and trigger again; verify the prompt is on the clipboard and the fallback notice appears
   - Passed (manual test by the maintainer, 2026-11-20).
 - [ ] 3.8 With the developer tools Network tab open, run 3.3; verify the plugin makes no network request
-  - Code review: main.js contains no fetch, requestUrl, XMLHttpRequest or WebSocket. Runtime check pending with 3.3.
+  - Code review: main.js contains no fetch, requestUrl, XMLHttpRequest or WebSocket. Runtime check pending with 3.3. Left open at archive time (2026-11-20).
 
 ## 4. Wrap-up
 
 - [x] 4.1 Update the specs for any check whose actual behavior differed, and run `openspec validate document-current-behavior --strict` successfully
   - Feature request from manual testing: Bases table cells show no dropdown. This matches the spec (dropdowns only in the Properties view), so it is a new capability for a separate change, not a defect.
   - One difference found (see 4.3). Spec left unchanged because it describes the intended behavior; the code is fixed in a separate change.
-- [ ] 4.2 Archive the change with `openspec archive document-current-behavior` and verify `openspec list --specs` shows `selector-properties` and `agent-triggers`
-- [ ] 4.3 Open a fix change for the finding: after the options of a property change in settings, an open dropdown keeps its old option list until the note's value changes (violates "Settings changes SHALL take effect in open notes"). Verify with a test that adding an option shows it immediately
+- [x] 4.2 Archive the change with `openspec archive document-current-behavior` and verify `openspec list --specs` shows `selector-properties` and `agent-triggers`
+- [x] 4.3 Open a fix change for the finding: after the options of a property change in settings, an open dropdown keeps its old option list until the note's value changes (violates "Settings changes SHALL take effect in open notes"). Verify with a test that adding an option shows it immediately
+  - Opened as change `fix-dropdown-options-refresh` (scaffold only).
